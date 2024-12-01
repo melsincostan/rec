@@ -3,6 +3,8 @@ package v1
 import (
 	"bytes"
 	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"crypto/subtle"
 	"encoding/gob"
 	"fmt"
@@ -48,14 +50,23 @@ func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 		return nil, err
 	}
 
-	cipher, err := aes.NewCipher(key)
+	aesCipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	encrypted := []byte{}
+	gcm, err := cipher.NewGCM(aesCipher)
+	if err != nil {
+		return nil, err
+	}
 
-	cipher.Encrypt(encrypted, encoded)
+	nonce := make([]byte, gcm.NonceSize())
+	_, err = rand.Read(nonce)
+	if err != nil {
+		return nil, err
+	}
+
+	encrypted := gcm.Seal(nonce, nonce, encoded, nil)
 
 	integrity, err := NewIntegrity(key, id, encrypted)
 	if err != nil {
@@ -86,13 +97,22 @@ func Decrypt[T any](key []byte, data types.EncryptedRecord) (*T, error) {
 		return nil, types.NewBadIntegrityErr()
 	}
 
-	cipher, err := aes.NewCipher(key)
+	aesCipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	encoded := []byte{}
-	cipher.Decrypt(encoded, data.Data)
+	gcm, err := cipher.NewGCM(aesCipher)
+	if err != nil {
+		return nil, err
+	}
+
+	nonce, encrypted := data.Data[:gcm.NonceSize()], data.Data[gcm.NonceSize():]
+
+	encoded, err := gcm.Open(nil, nonce, encrypted, nil)
+	if err != nil {
+		return nil, err
+	}
 	decoder := gob.NewDecoder(bytes.NewBuffer(encoded))
 
 	res := new(T)
