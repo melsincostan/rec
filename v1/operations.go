@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/gob"
 
+	"github.com/google/uuid"
 	"github.com/melsincostan/rec/types"
 )
+
+var VERSION = uint(1)
 
 func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 	if len(key) != 32 { // key size for AES256
@@ -20,7 +23,12 @@ func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return &types.EncryptedRecord{
+		ID:        uuid.New(),
+		Data:      []byte{},
+		Signature: []byte{},
+		Version:   VERSION,
+	}, nil
 }
 
 func Decrypt[T any](key []byte, data types.EncryptedRecord) (*T, error) {

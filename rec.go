@@ -1,11 +1,13 @@
 package rec
 
 import (
+	"fmt"
+
 	"github.com/melsincostan/rec/types"
 	v1 "github.com/melsincostan/rec/v1"
 )
 
-var V1 = uint(1)
+var V1 = v1.VERSION
 
 // Encrypt encrypts data to an Encrypted record using the specified key and version.
 func Encrypt(version uint, key []byte, data any) (*types.EncryptedRecord, error) {
@@ -13,7 +15,7 @@ func Encrypt(version uint, key []byte, data any) (*types.EncryptedRecord, error)
 	case V1:
 		return v1.Encrypt(key, data)
 	default:
-		return nil, nil
+		return nil, types.NewNotImplementedErr(fmt.Sprintf("encryption version: %d", version))
 	}
 }
 
@@ -23,7 +25,7 @@ func Decrypt[T any](key []byte, data types.EncryptedRecord) (*T, error) {
 	case V1:
 		return v1.Decrypt[T](key, data)
 	default:
-		return nil, nil
+		return nil, types.NewNotImplementedErr(fmt.Sprintf("encryption version: %d", data.Version))
 	}
 }
 
