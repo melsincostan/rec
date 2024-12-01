@@ -3,6 +3,7 @@ package v1
 import (
 	"bytes"
 	"crypto/aes"
+	"crypto/subtle"
 	"encoding/gob"
 	"fmt"
 	"io"
@@ -57,5 +58,32 @@ func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 }
 
 func Decrypt[T any](key []byte, data types.EncryptedRecord) (*T, error) {
-	return nil, nil
+	if len(key) != KEY_SIZE { // key_size for AES256
+		return nil, types.NewBadKeyErr(fmt.Sprintf("key size must be %d, got %d", KEY_SIZE, len(key)))
+	}
+
+	integrity, err := NewIntegrity(key, data.ID, data.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	if subtle.ConstantTimeCompare(data.Integrity, integrity.Digest()) != 1 {
+		return nil, types.NewBadIntegrityErr()
+	}
+
+	cipher, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	encoded := []byte{}
+	cipher.Decrypt(encoded, data.Data)
+	decoder := gob.NewDecoder(bytes.NewBuffer(encoded))
+
+	res := new(T)
+	if err := decoder.Decode(res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
