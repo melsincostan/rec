@@ -20,16 +20,33 @@ func NewNotImplementedErr(method string) *ErrUnimplemented {
 	}
 }
 
+// ErrBadKey represents an error for an invalid key (wrong length, ...).
 type ErrBadKey struct {
+	// Message allows adding a custom message to the error to specify what is wrong with the key
 	Message string
 }
 
+// Error returns custom error text.
 func (e ErrBadKey) Error() string {
 	return fmt.Sprintf("bad key: %s", e.Message)
 }
 
+// NewBadKeyErr returns the error type and sets the message to what is passed.
 func NewBadKeyErr(message string) *ErrBadKey {
 	return &ErrBadKey{
 		Message: message,
 	}
+}
+
+// ErrBadIntegrity represents an error when the computed integrity doesn't match the expected value.
+type ErrBadIntegrity struct{}
+
+// Error returns a custom error message.
+func (e ErrBadIntegrity) Error() string {
+	return "integrity not valid"
+}
+
+// NewBadIntegrityErr returns a pointer to an instance of ErrBadIntegrity.
+func NewBadIntegrityErr() *ErrBadIntegrity {
+	return &ErrBadIntegrity{}
 }
