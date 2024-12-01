@@ -1,6 +1,7 @@
 package rec
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/melsincostan/rec/types"
@@ -29,8 +30,32 @@ func TestEncrypt(t *testing.T) {
 	if res != nil {
 		t.Errorf("expected nil result, got %#v", res)
 	}
-	_, err = Encrypt(V1, key[:], testStructInstance)
+
+	// test that a proper version works fine
+	enc, err := Encrypt(V1, key[:], testStructInstance)
 	if err != nil {
 		t.Errorf("expected no error, got %#v", err)
+	}
+
+	if enc == nil {
+		t.Fatal("expected result when encrypting")
+	}
+
+	if enc.Version != V1 {
+		t.Errorf("bad version, expected %d, got %d", V1, enc.Version)
+	}
+
+	// test that the generated version decrypts fine
+	dec, err := Decrypt[testStruct](key[:], *enc)
+	if err != nil {
+		t.Errorf("expected no error, got %#v", err)
+	}
+
+	if dec == nil {
+		t.Fatal("expected result when decrypting")
+	}
+
+	if !reflect.DeepEqual(*dec, testStructInstance) {
+		t.Errorf("expected %#v, got %#v", testStructInstance, *dec)
 	}
 }
