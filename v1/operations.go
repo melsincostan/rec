@@ -27,7 +27,7 @@ func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 	return &types.EncryptedRecord{
 		ID:        uuid.New(),
 		Data:      []byte{},
-		Signature: []byte{},
+		Integrity: []byte{},
 		Version:   VERSION,
 	}, nil
 }
