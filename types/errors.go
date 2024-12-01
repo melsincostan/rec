@@ -50,3 +50,21 @@ func (e ErrBadIntegrity) Error() string {
 func NewBadIntegrityErr() *ErrBadIntegrity {
 	return &ErrBadIntegrity{}
 }
+
+// ErrBadRotation represents an error when attempting a rotation (most likely trying to go to a newer version < to the older one).
+type ErrBadRotation struct {
+	// Message is a field for an informative message about why the rotation couldn't be made.
+	Message string
+}
+
+// Error implements the error interface for ErrBadRotation.
+func (e ErrBadRotation) Error() string {
+	return fmt.Sprintf("impossible to rotate the record: %s", e.Message)
+}
+
+// NewBadRotationErr returns a pointer to an ErrBadRotation object with the Message field set to the provided message.
+func NewBadRotationErr(message string) *ErrBadRotation {
+	return &ErrBadRotation{
+		Message: message,
+	}
+}

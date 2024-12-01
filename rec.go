@@ -32,7 +32,7 @@ func Decrypt[T any](key []byte, data types.EncryptedRecord) (*T, error) {
 // Rotate is able to rotate key and version for a record by decrypting it and re-encrypting it using the new key and version.
 func Rotate[T any](oldKey []byte, newVersion uint, newKey []byte, data types.EncryptedRecord) (*types.EncryptedRecord, error) {
 	if data.Version > newVersion {
-		return nil, nil // TODO: proper error here...
+		return nil, types.NewBadRotationErr(fmt.Sprintf("newVersion cannot be lower than the current version: %d < %d", newVersion, data.Version))
 	}
 
 	d, err := Decrypt[T](oldKey, data)
