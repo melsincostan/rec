@@ -12,10 +12,11 @@ import (
 )
 
 const VERSION = uint(1)
+const KEY_SIZE = int(32)
 
 func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
-	if len(key) != 32 { // key size for AES256
-		return nil, types.NewBadKeyErr(fmt.Sprintf("key size must be 32, got %d", len(key)))
+	if len(key) != KEY_SIZE { // key size for AES256
+		return nil, types.NewBadKeyErr(fmt.Sprintf("key size must be %d, got %d", KEY_SIZE, len(key)))
 	}
 
 	id := uuid.New()
