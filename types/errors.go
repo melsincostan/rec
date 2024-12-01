@@ -10,12 +10,26 @@ type ErrUnimplemented struct {
 
 // Error returns custom error text.
 func (e ErrUnimplemented) Error() string {
-	return fmt.Sprintf("Not implemented: %s", e.Method)
+	return fmt.Sprintf("not implemented: %s", e.Method)
 }
 
 // NewNotImplementedErr returns a new ErrUnimplemented struct holding the specified method string.
 func NewNotImplementedErr(method string) *ErrUnimplemented {
 	return &ErrUnimplemented{
 		Method: method,
+	}
+}
+
+type ErrBadKey struct {
+	Message string
+}
+
+func (e ErrBadKey) Error() string {
+	return fmt.Sprintf("bad key: %s", e.Message)
+}
+
+func NewBadKeyErr(message string) *ErrBadKey {
+	return &ErrBadKey{
+		Message: message,
 	}
 }

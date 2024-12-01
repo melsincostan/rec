@@ -3,6 +3,7 @@ package v1
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/melsincostan/rec/types"
@@ -12,7 +13,7 @@ var VERSION = uint(1)
 
 func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 	if len(key) != 32 { // key size for AES256
-		return nil, nil // TODO: proper error type later
+		return nil, types.NewBadKeyErr(fmt.Sprintf("key size must be 32, got %d", len(key)))
 	}
 
 	var buf bytes.Buffer
