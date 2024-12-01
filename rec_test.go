@@ -29,7 +29,6 @@ func TestEncrypt(t *testing.T) {
 	if res != nil {
 		t.Errorf("expected nil result, got %#v", res)
 	}
-
 	_, err = Encrypt(V1, key[:], testStructInstance)
 	if err != nil {
 		t.Errorf("expected no error, got %#v", err)
