@@ -9,3 +9,4 @@ The goal is to try to provide functions for encryption, decryption, and support 
 This is meant to be a learning experience, feedback is welcome.
 
 Again, this attempts to be secure but is bound to have flaws that make it not so.
+It wasn't tested properly yet and is also probably broken in multiple ways.
