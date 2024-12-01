@@ -11,7 +11,7 @@ import (
 	"github.com/melsincostan/rec/types"
 )
 
-var VERSION = uint(1)
+const VERSION = uint(1)
 
 func Encrypt(key []byte, data any) (*types.EncryptedRecord, error) {
 	if len(key) != 32 { // key size for AES256
