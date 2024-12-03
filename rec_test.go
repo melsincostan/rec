@@ -27,6 +27,7 @@ var testStructEncrypted = types.EncryptedRecord{
 }
 
 func TestEncryptBadVersion(t *testing.T) {
+	t.Parallel()
 	// test that a non-existent version returns an error
 	res, err := Encrypt(nonexistentVersion, key[:], testStructInstance)
 	if err == nil {
@@ -41,6 +42,7 @@ func TestEncryptBadVersion(t *testing.T) {
 }
 
 func TestEncrypt(t *testing.T) {
+	t.Parallel()
 	// test that a proper version works fine
 	enc, err := Encrypt(V1, key[:], testStructInstance)
 	if err != nil {
@@ -57,6 +59,8 @@ func TestEncrypt(t *testing.T) {
 }
 
 func TestDecrypt(t *testing.T) {
+	t.Parallel()
+	// test that a known good (hopefully?) version decrypts fine
 	dec, err := Decrypt[testStruct](key[:], *&testStructEncrypted)
 	if err != nil {
 		t.Errorf("expected no error, got %#v", err)
